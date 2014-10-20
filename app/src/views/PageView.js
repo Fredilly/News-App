@@ -18,8 +18,6 @@ define(function(require, exports, module) {
 
         _setListeners.call(this);
 
-        _setRenderController.call(this);
-
     }
 
     PageView.prototype = Object.create(View.prototype);
@@ -63,7 +61,7 @@ define(function(require, exports, module) {
             }
         });
 
-        var backgroundSurface = new Surface({
+         this.backgroundSurface = new Surface({
             properties: {
                 backgroundColor: 'black'
             }
@@ -103,7 +101,7 @@ define(function(require, exports, module) {
             align : [1, 0.5]
         });
 
-        this.layout.header.add(backgroundModifier).add(backgroundSurface);
+        this.layout.header.add(backgroundModifier).add(this.backgroundSurface);
         this.layout.header.add(hamburgerModifier).add(this.hamburgerSurface);
         this.layout.header.add(searchModifier).add(searchSurface);
         this.layout.header.add(iconModifier).add(iconSurface);
@@ -124,18 +122,6 @@ define(function(require, exports, module) {
         }.bind(this));
         this.bodySurface.pipe(this._eventOutput);
     }
-    function _setRenderController(){
-        var renderController = new RenderController();
-        var surfaces = [];
-        this._eventInput.on('click', function(i){
-            surfaces.push(new ImageSurface({
-                size : [undefined, true],
-                content: this.options.stripData[i].page
-            }));
-        });
-        renderController.show(surfaces[0]);
-    }
-    
 
 
 
