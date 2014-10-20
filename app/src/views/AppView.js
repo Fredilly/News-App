@@ -28,6 +28,25 @@ define(function(require, exports, module) {
 
         _setListeners.call(this);
         _handleSwipe.call(this);
+
+        this.pages = {
+          headlines: {
+            stripImage: 'url',
+            page: new headlines()
+          },
+          sports: {
+            stripImage: 'url',
+            page: new Sports()
+          },
+          finance: {
+            stripImage: 'url',
+            page: new FinancePage()
+          },
+        };
+        
+        this._rc = new RenderController();
+        this._rc.show(this.pages.headlines.page);
+        this.add(this._rc);
     }
 
     AppView.prototype = Object.create(View.prototype);
@@ -52,6 +71,8 @@ define(function(require, exports, module) {
         });
 
         this._add(this.pageModifier).add(this.pageView);
+
+        // add render controller
     }
 
     function _createMenuView() {
@@ -66,11 +87,9 @@ define(function(require, exports, module) {
 
     function _setListeners() {
         this.pageView.on('menuToggle', this.toggleMenu.bind(this));
-        this.menuView.on('menuToggle', function(title) {
-            console.log(title); 
-            this.UpdateTitle;
-            console.log('this is ' + this.UpdateTitle);
-        }.bind(this.pageView)); 
+        this.menuView.on('showPage', function(title) {
+            this._rc.show(this.pages[title].page)
+            }.bind(this));  
         this.menuView.on('menuToggle', this.toggleMenu.bind(this));
 
     }
