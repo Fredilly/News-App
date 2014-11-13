@@ -29,24 +29,6 @@ define(function(require, exports, module) {
         _setListeners.call(this);
         _handleSwipe.call(this);
 
-        this.pages = {
-          headlines: {
-            stripImage: 'url',
-            page: new headlines()
-          },
-          sports: {
-            stripImage: 'url',
-            page: new Sports()
-          },
-          finance: {
-            stripImage: 'url',
-            page: new FinancePage()
-          },
-        };
-        
-        this._rc = new RenderController();
-        this._rc.show(this.pages.headlines.page);
-        this.add(this._rc);
     }
 
     AppView.prototype = Object.create(View.prototype);
