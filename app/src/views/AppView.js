@@ -1,21 +1,21 @@
 /*** AppView.js ***/
 
 define(function(require, exports, module) {
-    var View            = require('famous/core/View');
-    var Surface         = require('famous/core/Surface');
-    var Modifier        = require('famous/core/Modifier');
-    var Transform       = require('famous/core/Transform');
-    var StateModifier   = require('famous/modifiers/StateModifier');
-    var Easing          = require('famous/transitions/Easing');
-    var Transitionable  = require('famous/transitions/Transitionable');
-    var GenericSync     = require('famous/inputs/GenericSync');
-    var MouseSync       = require('famous/inputs/MouseSync');
-    var TouchSync       = require('famous/inputs/TouchSync');
+    var View = require('famous/core/View');
+    var Surface = require('famous/core/Surface');
+    var Modifier = require('famous/core/Modifier');
+    var Transform = require('famous/core/Transform');
+    var StateModifier = require('famous/modifiers/StateModifier');
+    var Easing = require('famous/transitions/Easing');
+    var Transitionable = require('famous/transitions/Transitionable');
+    var GenericSync = require('famous/inputs/GenericSync');
+    var MouseSync = require('famous/inputs/MouseSync');
+    var TouchSync = require('famous/inputs/TouchSync');
     GenericSync.register({'mouse': MouseSync, 'touch': TouchSync});
 
-    var PageView      = require('views/PageView');
-    var MenuView      = require('views/MenuView');
-    var StripData     = require('data/StripData');
+    var PageView = require('./PageView');
+    var MenuView = require('./MenuView');
+    var StripData = require('../data/StripData');
 
     function AppView() {
         View.apply(this, arguments);
@@ -58,7 +58,7 @@ define(function(require, exports, module) {
     }
 
     function _createMenuView() {
-        this.menuView = new MenuView({ stripData: StripData });
+        this.menuView = new MenuView({stripData: StripData});
 
         var menuModifier = new StateModifier({
             transform: Transform.behind
@@ -69,52 +69,52 @@ define(function(require, exports, module) {
 
     function _setListeners() {
         this.pageView.on('menuToggle', this.toggleMenu.bind(this));
-        this.menuView.on('showPage', function(title) {
-            this._rc.show(this.pages[title].page)
-            }.bind(this));  
+        this.menuView.on('showPage', function(data) {
+            this.pageView.showPage(data);
+        }.bind(this));
         this.menuView.on('menuToggle', this.toggleMenu.bind(this));
 
     }
 
     function _handleSwipe() {
         var sync = new GenericSync(
-            ['mouse', 'touch'],
-            {direction : GenericSync.DIRECTION_X}
+                ['mouse', 'touch'],
+                {direction: GenericSync.DIRECTION_X}
         );
 
         this.pageView.pipe(sync);
 
         sync.on('update', function(data) {
             var currentPosition = this.pageViewPos.get();
-            if(currentPosition === 0 && data.velocity > 0) {
+            if (currentPosition === 0 && data.velocity > 0) {
                 this.menuView.animateStrips();
             }
 
             this.pageViewPos.set(Math.max(0, currentPosition + data.delta));
         }.bind(this));
 
-        sync.on('end', (function(data) {
+        sync.on('end', function(data) {
             var velocity = data.velocity;
             var position = this.pageViewPos.get();
 
-            if(this.pageViewPos.get() > this.options.posThreshold) {
-                if(velocity < -this.options.velThreshold) {
+            if (this.pageViewPos.get() > this.options.posThreshold) {
+                if (velocity < -this.options.velThreshold) {
                     this.slideLeft();
                 } else {
                     this.slideRight();
                 }
             } else {
-                if(velocity > this.options.velThreshold) {
+                if (velocity > this.options.velThreshold) {
                     this.slideRight();
                 } else {
                     this.slideLeft();
                 }
             }
-        }).bind(this));
+        }.bind(this));
     }
 
     AppView.prototype.toggleMenu = function() {
-        if(this.menuToggle) {
+        if (this.menuToggle) {
             this.slideLeft();
         } else {
             this.slideRight();
