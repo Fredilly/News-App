@@ -1,12 +1,12 @@
 define(function(require, exports, module) {
-    var View            = require('famous/core/View');
-    var Surface         = require('famous/core/Surface');
-    var Transform       = require('famous/core/Transform');
-    var StateModifier   = require('famous/modifiers/StateModifier');
-    var HeaderFooter    = require('famous/views/HeaderFooterLayout');
-    var ImageSurface    = require('famous/surfaces/ImageSurface');
+    var View = require('famous/core/View');
+    var Surface = require('famous/core/Surface');
+    var Transform = require('famous/core/Transform');
+    var StateModifier = require('famous/modifiers/StateModifier');
+    var HeaderFooter = require('famous/views/HeaderFooterLayout');
+    var ImageSurface = require('famous/surfaces/ImageSurface');
     var InputSurface = require('famous/surfaces/InputSurface');
-    var RenderController = require("famous/views/RenderController");
+    var RenderController = require('famous/views/RenderController');
 
     function PageView() {
         View.apply(this, arguments);
@@ -24,7 +24,7 @@ define(function(require, exports, module) {
     PageView.prototype.constructor = PageView;
     PageView.prototype.UpdateTitle = function(title) {
         this.backgroundSurface.setContent(title);
-        }
+    }
 
     PageView.DEFAULT_OPTIONS = {
         headerSize: 44
@@ -55,13 +55,13 @@ define(function(require, exports, module) {
 
     function _createHeader() {
         var myTitleSurface = new Surface({
-            content : 'title',
-            properties : {
-                backgroundColor : 'green'
+            content: 'title',
+            properties: {
+                backgroundColor: 'green'
             }
         });
 
-         this.backgroundSurface = new Surface({
+        this.backgroundSurface = new Surface({
             properties: {
                 backgroundColor: 'black'
             }
@@ -69,36 +69,36 @@ define(function(require, exports, module) {
 
         this.hamburgerSurface = new ImageSurface({
             size: [44, 44],
-            content : 'img/hamburger.png'
+            content: 'img/hamburger.png'
         });
 
         var searchSurface = new ImageSurface({
             size: [232, 44],
-            content : 'img/search.png'
+            content: 'img/search.png'
         });
-        
+
         var iconSurface = new ImageSurface({
             size: [44, 44],
-            content : 'img/icon.png'
+            content: 'img/icon.png'
         });
 
         var backgroundModifier = new StateModifier({
-            transform : Transform.behind
+            transform: Transform.behind
         });
 
         var hamburgerModifier = new StateModifier({
             origin: [0, 0.5],
-            align : [0, 0.5]
+            align: [0, 0.5]
         });
 
         var searchModifier = new StateModifier({
             origin: [0.5, 0.5],
-            align : [0.5, 0.5]
+            align: [0.5, 0.5]
         });
 
         var iconModifier = new StateModifier({
             origin: [1, 0.5],
-            align : [1, 0.5]
+            align: [1, 0.5]
         });
 
         this.layout.header.add(backgroundModifier).add(this.backgroundSurface);
@@ -108,12 +108,14 @@ define(function(require, exports, module) {
     }
 
     function _createBody() {
+        this.renderer = new RenderController();
         this.bodySurface = new ImageSurface({
-            size : [undefined, true],
-            content : 'img/body.png'
+            size: [undefined, true],
+            content: 'img/body.png'
         });
 
-        this.layout.content.add(this.bodySurface);
+        this.layout.content.add(this.renderer);
+        this.renderer.show(this.bodySurface);
     }
 
     function _setListeners() {
@@ -123,7 +125,19 @@ define(function(require, exports, module) {
         this.bodySurface.pipe(this._eventOutput);
     }
 
-
+    PageView.prototype.showPage = function showPage(data) {
+        // Only a simple example to show how you can build a page and show it
+        // You should create a  page view and pass the data and that would be your new bodySurface
+        //   like this.bodySurface = new ContentView({data: data});
+        this.bodySurface = new Surface({
+            size: [undefined, true],
+            content: JSON.stringify(data),
+            properties: {
+                color: '#fff'
+            }
+        });
+        this.renderer.show(this.bodySurface);
+    }
 
     module.exports = PageView;
 });
