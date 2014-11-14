@@ -53,9 +53,10 @@ define(function(require, exports, module) {
             });
 
             this.stripView.on('clickstrip', (function(i) {
-                return function() {
+                return function(data) {
                 this._eventOutput.emit('menuToggle', i);
-                console.log('heard clickstrip');
+                this._eventOutput.emit('showPage', this.options.stripData[i]);
+                console.log('heard clickstrip', i, this.options.stripData[i].title);
                 }.bind(this);
             }.bind(this))(i));
 
@@ -63,7 +64,6 @@ define(function(require, exports, module) {
             this.add(stripModifier).add(this.stripView);
 
             yOffset += this.options.stripOffset;
-
 
         }
     }
@@ -80,7 +80,7 @@ define(function(require, exports, module) {
     }
 
     MenuView.prototype.resetStrips = function() {
-        for(var i = 0; i < this.stripModifiers.length; i++) {
+        for (var i = 0; i < this.stripModifiers.length; i++) {
             var initX = -this.options.stripWidth;
             var initY = this.options.topOffset
                 + this.options.stripOffset * i
@@ -100,12 +100,12 @@ define(function(require, exports, module) {
         var stripOffset = this.options.stripOffset;
         var topOffset = this.options.topOffset;
 
-        for(var i = 0; i < this.stripModifiers.length; i++) {
+        for (var i = 0; i < this.stripModifiers.length; i++) {
             Timer.setTimeout(function(i) {
                 var yOffset = topOffset + stripOffset * i;
 
                 this.stripModifiers[i].setTransform(
-                    Transform.translate( 0, yOffset, 0), transition);
+                    Transform.translate(0, yOffset, 0), transition);
             }.bind(this, i), i * delay);
         }
 
@@ -114,6 +114,5 @@ define(function(require, exports, module) {
         }).bind(this), transition.duration);
     };
 
-    
     module.exports = MenuView;
 });
